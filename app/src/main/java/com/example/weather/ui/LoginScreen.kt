@@ -1,5 +1,5 @@
 
-package com.example.register.ui
+package com.example.weather.ui
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.weather.ui.UserPreferences
 import kotlinx.coroutines.launch
 
 @Composable

@@ -1,5 +1,5 @@
 
-package com.example.register.ui
+package com.example.weather.ui
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
@@ -31,7 +31,7 @@ class UserPreferences(private val context: Context){
         val savedEmail = context.datastore.data
             .map { it[EMAIL] ?: "" }
             .first()
-        return savedEmail == email
+        return savedEmail.isNotEmpty()
     }
 
 
