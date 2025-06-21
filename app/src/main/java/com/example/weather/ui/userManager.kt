@@ -27,6 +27,13 @@ class UserPreferences(private val context: Context){
         val savedPassword = context.datastore.data.map { it[PASSWORD]?:""}.first()
         return email == savedEmail && password == savedPassword
     }
+    suspend fun isEmailRegistered(email: String): Boolean {
+        val savedEmail = context.datastore.data
+            .map { it[EMAIL] ?: "" }
+            .first()
+        return savedEmail == email
+    }
+
 
     suspend fun isUserRegistered(): Boolean {
         val email = context.datastore.data.map { it[EMAIL] ?: "" }.first()
