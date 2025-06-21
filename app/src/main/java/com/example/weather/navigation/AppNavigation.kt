@@ -1,7 +1,5 @@
-package com.example.register.ui
+package com.example.weather.navigation
 
-import android.content.Context
-import android.os.UserManager
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -9,9 +7,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.*
+import com.example.weather.ui.LoginScreen
+import com.example.weather.ui.RegisterScreen
+import com.example.weather.ui.UserPreferences
 import com.example.weather.ui.WeatherApp
 import com.example.weather.ui.WeatherViewModel
 

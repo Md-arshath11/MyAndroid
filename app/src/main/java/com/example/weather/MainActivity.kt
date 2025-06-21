@@ -9,8 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavController
-import com.example.register.ui.AppNavigation
+import com.example.weather.navigation.AppNavigation
 
 import com.example.weather.ui.WeatherViewModel
 import com.example.weather.ui.theme.WeatherTheme
