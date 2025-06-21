@@ -1,11 +1,9 @@
 package com.example.weather.ui
 
-import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia.DefaultTab.AlbumsTab.value
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,7 +19,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -30,23 +27,29 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil3.compose.AsyncImage
-import com.example.weather.network.NetworkResponse
-import com.example.weather.network.WeatherModel
+import com.example.weather.data.WeatherModel
 
 
 @Composable
-fun WeatherApp(viewModel: WeatherViewModel){
+fun WeatherApp(viewModel: WeatherViewModel,
+               navController: NavController ){
+
+    val isLoading by viewModel.isLoading.observeAsState(false)
+    val error by viewModel.error.observeAsState()
+    val weather by viewModel.weather.observeAsState()
+
     var city by remember {
+
         mutableStateOf("")
     }
-    val weatherResult=viewModel.weatherResult.observeAsState()
+    val weatherResult=viewModel.weather.observeAsState()
     val KeyboardControl = LocalSoftwareKeyboardController.current
     Column(
         modifier = Modifier
@@ -72,7 +75,7 @@ fun WeatherApp(viewModel: WeatherViewModel){
                 }
             )
             IconButton(onClick = {
-                viewModel.getData(city)
+                viewModel.fetchWeather(city)
                 KeyboardControl?.hide()
             }) {
                 Icon(imageVector =Icons.Default.Search,
@@ -80,25 +83,21 @@ fun WeatherApp(viewModel: WeatherViewModel){
                     )
             }
         }
-        when(val result=weatherResult.value){
-            is NetworkResponse.Error -> {
-                Text(text = result.message)
-            }
-            NetworkResponse.Loading -> {
-                CircularProgressIndicator()
-            }
-            is NetworkResponse.Success -> {
-                WeatherDetails(data=result.data)
-            }
-            null -> {
+        if (isLoading) {
+            CircularProgressIndicator()
+        } else if (error != null) {
+            Text(text = error ?: "Unknown Error")
+        } else if (weather != null) {
+            WeatherDetails(data = weather!!)
+        } else {
 
-            }
         }
+
     }
 }
 
 @Composable
-fun WeatherDetails(data:WeatherModel){
+fun WeatherDetails(data: WeatherModel){
     Column (
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
