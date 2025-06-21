@@ -69,8 +69,7 @@ fun RegisterScreen(navController:NavController){
                 if (email.isNotBlank() && password.isNotBlank() && confirmPassword.isNotBlank()) {
                     if (password == confirmPassword) {
                         scope.launch {
-                            val alreadyResgistered = userPrefs.isEmailRegistered(email)
-                            if (alreadyResgistered) {
+                            if (userPrefs.isEmailRegistered(email)) {
                                 Toast.makeText(
                                     context,
                                     "Email is already registered",

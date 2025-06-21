@@ -31,7 +31,7 @@ class UserPreferences(private val context: Context){
         val savedEmail = context.datastore.data
             .map { it[EMAIL] ?: "" }
             .first()
-        return savedEmail.isNotEmpty()
+        return savedEmail == email
     }
 
 
