@@ -2,8 +2,8 @@ package com.example.weather.ui
 
 import com.example.weather.data.User
 
-object UserList{
-    val users = mutableListOf<User>()
+class UserList{
+    private val users = mutableListOf<User>()
 
     fun isEmailRegistered(email: String):Boolean{
         return users.any(){it.email == email}
@@ -21,4 +21,6 @@ object UserList{
     fun login(email: String,password: String): Boolean{
         return users.any{it.email==email && it.password==password }
     }
+
+    fun getUsers():List<User> = users
 }

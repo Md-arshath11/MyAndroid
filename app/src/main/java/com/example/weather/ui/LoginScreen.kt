@@ -14,7 +14,8 @@ import com.example.weather.ui.UserPreferences
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(navController: NavController,
+                userList: UserList) {
     val context = LocalContext.current
     val userPrefs = remember { UserPreferences(context) }
     val scope = rememberCoroutineScope()
@@ -43,7 +44,7 @@ fun LoginScreen(navController: NavController) {
 
         Button(onClick = {
             scope.launch {
-                val valid = UserList.login(email,password)
+                val valid = userList.login(email,password)
                 if (valid) {
                     Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
                     navController.navigate("home")
