@@ -43,7 +43,7 @@ fun LoginScreen(navController: NavController) {
 
         Button(onClick = {
             scope.launch {
-                val valid = userPrefs.isUserValid(email, password)
+                val valid = UserList.login(email,password)
                 if (valid) {
                     Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
                     navController.navigate("home")

@@ -69,14 +69,14 @@ fun RegisterScreen(navController:NavController){
                 if (email.isNotBlank() && password.isNotBlank() && confirmPassword.isNotBlank()) {
                     if (password == confirmPassword) {
                         scope.launch {
-                            if (userPrefs.isEmailRegistered(email)) {
+                            if (UserList.isEmailRegistered(email)) {
                                 Toast.makeText(
                                     context,
                                     "Email is already registered",
                                     Toast.LENGTH_SHORT
                                 ).show()
                             } else {
-                                userPrefs.saveUser(email, password)
+                                UserList.register(email,password)
                                 Toast.makeText(
                                     context,
                                     "User Registered Successfully",
