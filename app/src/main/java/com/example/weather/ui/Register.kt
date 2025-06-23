@@ -27,7 +27,8 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 
 @Composable
-fun RegisterScreen(navController:NavController){
+fun RegisterScreen(navController:NavController,
+                   userList: UserList){
     val context = LocalContext.current
     val userPrefs = remember { UserPreferences(context) }
     val scope = rememberCoroutineScope()
@@ -69,14 +70,14 @@ fun RegisterScreen(navController:NavController){
                 if (email.isNotBlank() && password.isNotBlank() && confirmPassword.isNotBlank()) {
                     if (password == confirmPassword) {
                         scope.launch {
-                            if (UserList.isEmailRegistered(email)) {
+                            if (userList.isEmailRegistered(email)) {
                                 Toast.makeText(
                                     context,
                                     "Email is already registered",
                                     Toast.LENGTH_SHORT
                                 ).show()
                             } else {
-                                UserList.register(email,password)
+                                userList.register(email,password)
                                 Toast.makeText(
                                     context,
                                     "User Registered Successfully",
