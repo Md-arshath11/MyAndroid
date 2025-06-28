@@ -1,34 +1,40 @@
 package com.example.weather.ui
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.weather.network.RetrofitInstance
-import com.example.weather.data.WeatherModel
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import com.example.weather.repository.UserRepository
+import com.example.weather.data.WeatherEntity
+import com.example.weather.repository.WeatherRepository
 import kotlinx.coroutines.launch
 
-class WeatherViewModel : ViewModel() {
+class WeatherViewModel (private val repository: WeatherRepository,
+                         private val userRepository: UserRepository,
+
+                       ): ViewModel() {
+
+
 
     val isLoading = MutableLiveData<Boolean>(false)
     val error = MutableLiveData<String?>()
-    val weather = MutableLiveData<WeatherModel>()
+    val weather = MutableLiveData<WeatherEntity>()
 
+    var loggedInEmail: String? = null
 
-    fun fetchWeather(city: String) {
+    val loginSuccess = MutableLiveData<Boolean>()
+    val registerSuccess = MutableLiveData<Boolean>()
+
+    fun fetchWeather(city: String,email: String) {
         viewModelScope.launch {
             isLoading.value = true
             error.value = null
             try {
-                val result = RetrofitInstance.WeatherApi.getWeather(
-                    apiKey = "62bb4ff239974c30a1895758250406",
-                    location = city
-                )
+                val result = repository.getWeather(city,email)
+                Log.d("WeatherFetch", "Fetched Weather: ${result.city}")
                 weather.value = result
             } catch (e: Exception) {
+                Log.e("WeatherViewModel", "Error fetching weather", e)
                 error.value = e.message ?: "Unknown Error"
             } finally {
                 isLoading.value = false
@@ -36,5 +42,21 @@ class WeatherViewModel : ViewModel() {
         }
     }
 
+    fun login(email: String, password: String) {
+        viewModelScope.launch {
+            val isSuccess = userRepository.loginUser(email, password)
+            loginSuccess.value = isSuccess
+            if (isSuccess) {
+                loggedInEmail = email
+            }
+        }
+    }
+
+
+    fun register(email:String,password: String){
+        viewModelScope.launch {
+            registerSuccess.value=userRepository.registerUser(email, password)
+        }
+    }
 
 }

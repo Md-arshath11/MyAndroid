@@ -10,12 +10,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.weather.repository.UserRepository
 import com.example.weather.ui.UserPreferences
 import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(navController: NavController,
-                userList: UserList) {
+                userRepository: UserRepository) {
     val context = LocalContext.current
     val userPrefs = remember { UserPreferences(context) }
     val scope = rememberCoroutineScope()
@@ -44,10 +45,10 @@ fun LoginScreen(navController: NavController,
 
         Button(onClick = {
             scope.launch {
-                val valid = userList.login(email,password)
+                val valid = userRepository.loginUser(email, password)
                 if (valid) {
                     Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
-                    navController.navigate("home")
+                    navController.navigate("home/${email.trim()} ")
                 } else {
                     Toast.makeText(context, "Invalid Credentials , Click Register to your account", Toast.LENGTH_SHORT).show()
                 }
