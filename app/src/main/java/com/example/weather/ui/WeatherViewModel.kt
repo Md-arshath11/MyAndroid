@@ -1,39 +1,40 @@
 package com.example.weather.ui
 
-import android.util.Log
-import androidx.compose.material3.Text
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.weather.network.Constant
-import com.example.weather.network.NetworkResponse
 import com.example.weather.network.RetrofitInstance
-import com.example.weather.network.WeatherModel
+import com.example.weather.data.WeatherModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class WeatherViewModel:ViewModel(){
-    private val weatherApi=RetrofitInstance.weatherApi
-    private val _weatherResult= MutableLiveData<NetworkResponse<WeatherModel>>()
-     val weatherResult:LiveData<NetworkResponse<WeatherModel>> = _weatherResult
-    fun getData(city:String){
-        _weatherResult.value=NetworkResponse.Loading
-       viewModelScope.launch {
-          try {
-              val response=weatherApi.getWeather(Constant.apiKey,city)
-              if (response.isSuccessful){
-                  response.body()?.let {
-                      _weatherResult.value=NetworkResponse.Success(it)
-                  }
-              }else{
-                  _weatherResult.value=NetworkResponse.Error("Failed to load Data")
-              }
-          }
-          catch (e:Exception){
-              _weatherResult.value=NetworkResponse.Error("Failed to load data")
-          }
-       }
+class WeatherViewModel : ViewModel() {
+
+    val isLoading = MutableLiveData<Boolean>(false)
+    val error = MutableLiveData<String?>()
+    val weather = MutableLiveData<WeatherModel>()
 
 
+    fun fetchWeather(city: String) {
+        viewModelScope.launch {
+            isLoading.value = true
+            error.value = null
+            try {
+                val result = RetrofitInstance.WeatherApi.getWeather(
+                    apiKey = "62bb4ff239974c30a1895758250406",
+                    location = city
+                )
+                weather.value = result
+            } catch (e: Exception) {
+                error.value = e.message ?: "Unknown Error"
+            } finally {
+                isLoading.value = false
+            }
+        }
     }
+
+
 }
