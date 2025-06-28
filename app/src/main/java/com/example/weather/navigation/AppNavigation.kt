@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.*
+import com.example.weather.repository.UserRepository
 import com.example.weather.ui.LoginScreen
 import com.example.weather.ui.RegisterScreen
 import com.example.weather.ui.UserList
@@ -17,7 +18,8 @@ import com.example.weather.ui.WeatherViewModel
 
 
 @Composable
-fun AppNavigation(weatherViewModel: WeatherViewModel) {
+fun AppNavigation(weatherViewModel: WeatherViewModel,
+                  userRepository: UserRepository) {
     val navController = rememberNavController()
     val userList = remember { UserList()}
     val context= LocalContext.current
@@ -25,13 +27,15 @@ fun AppNavigation(weatherViewModel: WeatherViewModel) {
     var startDestination by remember { mutableStateOf("register") }
 
     LaunchedEffect(Unit) {
-        val isRegistered = userPrefs.isUserRegistered()
+        val isRegistered = userRepository.isAnyUserRegistered()
         startDestination = if(isRegistered)"login" else "register"
     }
 
     NavHost(navController, startDestination = startDestination) {
-        composable("register") { RegisterScreen(navController, userList) }
-        composable("login") { LoginScreen(navController, userList) }
-        composable("home") { WeatherApp(viewModel = weatherViewModel,navController= rememberNavController()) }
+        composable("register") { RegisterScreen(navController, userRepository) }
+        composable("login") { LoginScreen(navController, userRepository) }
+        composable("home/{email}") { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email")?:""
+            WeatherApp(viewModel = weatherViewModel,navController= navController,email = email) }
     }
 }

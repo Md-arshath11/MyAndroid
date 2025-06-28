@@ -1,5 +1,7 @@
 package com.example.weather.ui
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -34,17 +37,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import com.example.weather.data.WeatherEntity
 import com.example.weather.data.WeatherModel
 
 
 @Composable
 fun WeatherApp(viewModel: WeatherViewModel,
-               navController: NavController ){
+               navController: NavController,
+               email:String){
 
     val isLoading by viewModel.isLoading.observeAsState(false)
     val error by viewModel.error.observeAsState()
     val weather by viewModel.weather.observeAsState()
-
+    val context = LocalContext.current
     var city by remember {
 
         mutableStateOf("")
@@ -75,7 +80,9 @@ fun WeatherApp(viewModel: WeatherViewModel,
                 }
             )
             IconButton(onClick = {
-                viewModel.fetchWeather(city)
+                Log.d("WeatherFetch", "City: $city, Email: $email")
+
+                viewModel.fetchWeather(city,email)
                 KeyboardControl?.hide()
             }) {
                 Icon(imageVector =Icons.Default.Search,
@@ -97,7 +104,7 @@ fun WeatherApp(viewModel: WeatherViewModel,
 }
 
 @Composable
-fun WeatherDetails(data: WeatherModel){
+fun WeatherDetails(data: WeatherEntity){
     Column (
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -111,24 +118,24 @@ fun WeatherDetails(data: WeatherModel){
                 contentDescription = "Location",
                 modifier = Modifier.size(40.dp)
             )
-            Text(text = data.location.name, fontSize = 30.sp)
+            Text(text = data.city, fontSize = 30.sp)
             Spacer(modifier = Modifier.width(8.dp))
-            Text(text = data.location.country, fontSize = 18.sp, color = Color.Gray)
+            Text(text = data.country, fontSize = 18.sp, color = Color.Gray)
         }
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "${data.current.temp_c} ° c",
+            text = "${data.temperature} ° c",
             fontSize = 56.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
         AsyncImage(
             modifier = Modifier.size(160.dp),
-            model = "https:${data.current.condition.icon}".replace("64x64","128x128"),
+            model = "https:${data.iconUrl}".replace("64x64","128x128"),
             contentDescription = "condition"
         )
         Text(
-            text = data.current.condition.text,
+            text = data.condition,
             fontSize = 20.sp,
             textAlign = TextAlign.Center,
             color = Color.Gray
@@ -140,22 +147,22 @@ fun WeatherDetails(data: WeatherModel){
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    WeatherKeyvalue("Humidity",data.current.humidity)
-                    WeatherKeyvalue("Cloud",data.current.cloud)
+                    WeatherKeyvalue("Humidity",data.humidity)
+                    WeatherKeyvalue("Cloud",data.cloud)
 
                 }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    WeatherKeyvalue("Wind Speed",data.current.wind_kph+"Km/h")
-                    WeatherKeyvalue("Wind Direction",data.current.wind_dir)
+                    WeatherKeyvalue("Wind Speed",data.windSpeed+"Km/h")
+                    WeatherKeyvalue("Wind Direction",data.windDirection)
                 }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    WeatherKeyvalue("Local Time",data.location.localtime)
+                    WeatherKeyvalue("Local Time",data.localTime)
 
                 }
             }
