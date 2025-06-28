@@ -24,11 +24,13 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.weather.repository.UserRepository
 import kotlinx.coroutines.launch
 
 @Composable
 fun RegisterScreen(navController:NavController,
-                   userList: UserList){
+                   userRepository: UserRepository
+){
     val context = LocalContext.current
     val userPrefs = remember { UserPreferences(context) }
     val scope = rememberCoroutineScope()
@@ -70,20 +72,11 @@ fun RegisterScreen(navController:NavController,
                 if (email.isNotBlank() && password.isNotBlank() && confirmPassword.isNotBlank()) {
                     if (password == confirmPassword) {
                         scope.launch {
-                            if (userList.isEmailRegistered(email)) {
-                                Toast.makeText(
-                                    context,
-                                    "Email is already registered",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            } else {
-                                userList.register(email,password)
-                                Toast.makeText(
-                                    context,
-                                    "User Registered Successfully",
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
+                            val isRegistered = userRepository.registerUser(email, password)
+                            if (!isRegistered){
+                                Toast.makeText(context,"Email is already registered",Toast.LENGTH_SHORT).show()
+                            }else{
+                                Toast.makeText(context,"user registered successfully",Toast.LENGTH_SHORT).show()
                                 navController.navigate("login")
                             }
                         }
