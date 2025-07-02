@@ -48,7 +48,7 @@ fun LoginScreen(navController: NavController,
                 val valid = userRepository.loginUser(email, password)
                 if (valid) {
                     Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
-                    navController.navigate("home/${email.trim()} ")
+                    navController.navigate("home/${email}")
                 } else {
                     Toast.makeText(context, "Invalid Credentials , Click Register to your account", Toast.LENGTH_SHORT).show()
                 }

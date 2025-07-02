@@ -15,12 +15,10 @@ class WeatherRepository(private val api:WeatherApiService,
                         private val userDao: UserDao
     ) {
     suspend fun getWeather(city: String,email:String): WeatherEntity {
-        val user = userDao.getUser(email)
-        Log.d("WeatherRepository", "Fetched user: $user")
-        if (user == null) {
-            throw Exception("User not found for email: $email")
-        }
-        return if (user.isFirstLogin){
+
+        val user = userDao.getUser(email)?:throw Exception("User not found for email: $email")
+
+
         val response = api.getWeather(
             apiKey = "62bb4ff239974c30a1895758250406",
             location = city
@@ -40,11 +38,10 @@ class WeatherRepository(private val api:WeatherApiService,
         )
 
         weatherDao.insertWeather(entity)
-        userDao.notFirstLogin(email)
-         entity
-        } else {
 
-            weatherDao.getWeather() ?: throw Exception("No data in local database")
-        }
+         if(user.isFirstLogin){
+             userDao.notFirstLogin(email)
+         }
+        return entity
     }
 }

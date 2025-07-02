@@ -55,8 +55,11 @@ fun WeatherApp(viewModel: WeatherViewModel,
 
         mutableStateOf("")
     }
+
     val weatherResult=viewModel.weather.observeAsState()
     val KeyboardControl = LocalSoftwareKeyboardController.current
+
+
 
     Column(
         modifier = Modifier
