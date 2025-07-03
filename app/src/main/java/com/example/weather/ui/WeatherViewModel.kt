@@ -1,39 +1,62 @@
 package com.example.weather.ui
 
 import android.util.Log
-import androidx.compose.material3.Text
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.weather.network.Constant
-import com.example.weather.network.NetworkResponse
-import com.example.weather.network.RetrofitInstance
-import com.example.weather.network.WeatherModel
+import com.example.weather.repository.UserRepository
+import com.example.weather.data.WeatherEntity
+import com.example.weather.repository.WeatherRepository
 import kotlinx.coroutines.launch
 
-class WeatherViewModel:ViewModel(){
-    private val weatherApi=RetrofitInstance.weatherApi
-    private val _weatherResult= MutableLiveData<NetworkResponse<WeatherModel>>()
-     val weatherResult:LiveData<NetworkResponse<WeatherModel>> = _weatherResult
-    fun getData(city:String){
-        _weatherResult.value=NetworkResponse.Loading
-       viewModelScope.launch {
-          try {
-              val response=weatherApi.getWeather(Constant.apiKey,city)
-              if (response.isSuccessful){
-                  response.body()?.let {
-                      _weatherResult.value=NetworkResponse.Success(it)
-                  }
-              }else{
-                  _weatherResult.value=NetworkResponse.Error("Failed to load Data")
-              }
-          }
-          catch (e:Exception){
-              _weatherResult.value=NetworkResponse.Error("Failed to load data")
-          }
-       }
+class WeatherViewModel (private val repository: WeatherRepository,
+                         private val userRepository: UserRepository,
+
+                       ): ViewModel() {
 
 
+
+    val isLoading = MutableLiveData<Boolean>(false)
+    val error = MutableLiveData<String?>()
+    val weather = MutableLiveData<WeatherEntity>()
+
+    var loggedInEmail: String? = null
+
+    val loginSuccess = MutableLiveData<Boolean>()
+    val registerSuccess = MutableLiveData<Boolean>()
+
+    fun fetchWeather(city: String,email: String) {
+        viewModelScope.launch {
+            isLoading.value = true
+            error.value = null
+            try {
+                val result = repository.getWeather(city,email)
+                Log.d("WeatherFetch", "Fetched Weather: ${result.city}")
+                weather.value = result
+            } catch (e: Exception) {
+                Log.e("WeatherViewModel", "Error fetching weather", e)
+                error.value = e.message ?: "Unknown Error"
+            } finally {
+                isLoading.value = false
+            }
+        }
     }
+
+    fun login(email: String, password: String) {
+        viewModelScope.launch {
+            val isSuccess = userRepository.loginUser(email, password)
+            loginSuccess.value = isSuccess
+            if (isSuccess) {
+                loggedInEmail = email
+            }
+        }
+    }
+
+
+    fun register(email:String,password: String){
+        viewModelScope.launch {
+            registerSuccess.value=userRepository.registerUser(email, password)
+        }
+    }
+
 }

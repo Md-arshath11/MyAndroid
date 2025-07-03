@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("org.jetbrains.kotlin.kapt")
+    id("com.google.gms.google-services")
+
 }
 
 android {
@@ -10,8 +13,8 @@ android {
 
     defaultConfig {
         applicationId = "com.example.weather"
-        minSdk = 24
-        targetSdk = 35
+        minSdk = 21
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -65,5 +68,16 @@ dependencies {
     implementation ("androidx.compose.runtime:runtime-livedata:1.8.2")
     implementation("io.coil-kt.coil3:coil-compose:3.2.0")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.2")
+
+    implementation("androidx.navigation:navigation-compose:2.9.0")
+    implementation ("androidx.datastore:datastore-preferences:1.1.6")
+
+    implementation(platform("com.google.firebase:firebase-bom:33.15.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("androidx.room:room-runtime:2.7.2")
+    implementation("androidx.room:room-ktx:2.7.2")
+    kapt("androidx.room:room-compiler:2.7.2")
+
+
 
 }
