@@ -1,11 +1,8 @@
 package com.example.weather.repository
 
-import android.util.Log
 import com.example.weather.data.UserDao
 import com.example.weather.data.WeatherDao
 import com.example.weather.data.WeatherEntity
-import com.example.weather.data.WeatherModel
-import com.example.weather.network.RetrofitInstance
 import com.example.weather.network.WeatherApiService
 import com.example.weather.ui.UserPreferences
 
@@ -19,7 +16,8 @@ class WeatherRepository(private val api:WeatherApiService,
         val user = userDao.getUser(email)?:throw Exception("User not found for email: $email")
 
 
-        val response = api.getWeather(
+        return if (user.isFirstLogin){
+            val response = api.getWeather(
             apiKey = "62bb4ff239974c30a1895758250406",
             location = city
         )
@@ -38,10 +36,11 @@ class WeatherRepository(private val api:WeatherApiService,
         )
 
         weatherDao.insertWeather(entity)
-
-         if(user.isFirstLogin){
              userDao.notFirstLogin(email)
-         }
-        return entity
+            entity
+         }else{
+             weatherDao.getWeather()?: throw Exception("No data found")
+        }
+
     }
 }

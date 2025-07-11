@@ -1,5 +1,6 @@
 package com.example.weather.ui
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,11 +8,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.weather.repository.UserRepository
 import com.example.weather.data.WeatherEntity
 import com.example.weather.repository.WeatherRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class WeatherViewModel (private val repository: WeatherRepository,
                          private val userRepository: UserRepository,
-
+                        appContext: Context
                        ): ViewModel() {
 
 
@@ -24,6 +27,18 @@ class WeatherViewModel (private val repository: WeatherRepository,
 
     val loginSuccess = MutableLiveData<Boolean>()
     val registerSuccess = MutableLiveData<Boolean>()
+
+    private val connectivityObserver = ConnectivityObserver(appContext.applicationContext)
+    private val _isConnected = MutableStateFlow(true)
+    val isConnected:StateFlow<Boolean> = _isConnected
+
+    init {
+        viewModelScope.launch {
+            connectivityObserver.isConnectedFlow.collect {
+                _isConnected.value = it
+            }
+        }
+    }
 
     fun fetchWeather(city: String,email: String) {
         viewModelScope.launch {

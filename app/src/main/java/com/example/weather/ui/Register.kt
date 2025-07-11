@@ -1,6 +1,7 @@
 
 package com.example.weather.ui
 
+import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -69,9 +70,14 @@ fun RegisterScreen(navController:NavController,
 
         Button(
             onClick = {
-                if (email.isNotBlank() && password.isNotBlank() && confirmPassword.isNotBlank()) {
-                    if (password == confirmPassword) {
-                        scope.launch {
+                if (email.isBlank() || password.isBlank() || confirmPassword.isBlank()){
+                    Toast.makeText(context, "Fill all the fields", Toast.LENGTH_SHORT).show()
+                }else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+                    Toast.makeText(context, "Invalid email", Toast.LENGTH_SHORT).show()
+                }else if (password!=confirmPassword){
+                    Toast.makeText(context, "Passwords doesn't match", Toast.LENGTH_SHORT).show()
+                }else{
+                    scope.launch {
                             val isRegistered = userRepository.registerUser(email, password)
                             if (!isRegistered){
                                 Toast.makeText(context,"Email is already registered",Toast.LENGTH_SHORT).show()
@@ -80,14 +86,9 @@ fun RegisterScreen(navController:NavController,
                                 navController.navigate("login")
                             }
                         }
-                } else {
-                    Toast.makeText(context, "Passwords doesn't match", Toast.LENGTH_SHORT).show()
                 }
-            } else
-                {
-                    Toast.makeText(context, "Fill all the fields", Toast.LENGTH_SHORT).show()
                 }
-            }){
+            ){
             Text(text ="Register" )
         }
 

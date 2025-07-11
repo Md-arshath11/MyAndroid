@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.ViewModelProvider
 import com.example.weather.data.WeatherDatabase
 import com.example.weather.navigation.AppNavigation
 import com.example.weather.network.RetrofitInstance
@@ -31,7 +30,7 @@ class MainActivity : ComponentActivity() {
         val userRepository= UserRepository(userDao)
         val repository = WeatherRepository(api,dao,userPrefs,userDao )
 
-       val weatherViewModel = WeatherViewModel(repository,userRepository)
+       val weatherViewModel = WeatherViewModel(repository,userRepository,applicationContext)
         setContent {
             WeatherTheme {
                     Surface(

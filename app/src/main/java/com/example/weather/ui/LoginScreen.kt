@@ -1,6 +1,7 @@
 
 package com.example.weather.ui
 
+import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -11,7 +12,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.weather.repository.UserRepository
-import com.example.weather.ui.UserPreferences
 import kotlinx.coroutines.launch
 
 @Composable
@@ -44,6 +44,11 @@ fun LoginScreen(navController: NavController,
         Spacer(Modifier.height(20.dp))
 
         Button(onClick = {
+            if (email.isBlank() || password.isBlank()){
+                Toast.makeText(context, "Fill all the fields", Toast.LENGTH_SHORT).show()
+            }else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+                Toast.makeText(context, "Invalid email", Toast.LENGTH_SHORT).show()
+            }else{
             scope.launch {
                 val valid = userRepository.loginUser(email, password)
                 if (valid) {
@@ -53,6 +58,7 @@ fun LoginScreen(navController: NavController,
                     Toast.makeText(context, "Invalid Credentials , Click Register to your account", Toast.LENGTH_SHORT).show()
                 }
             }
+        }
         }) {
             Text("Login")
         }

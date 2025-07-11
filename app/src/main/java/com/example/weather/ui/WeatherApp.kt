@@ -1,7 +1,6 @@
 package com.example.weather.ui
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,14 +13,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -39,7 +41,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.example.weather.data.WeatherEntity
-import com.example.weather.data.WeatherModel
 
 
 @Composable
@@ -55,11 +56,28 @@ fun WeatherApp(viewModel: WeatherViewModel,
 
         mutableStateOf("")
     }
+    val isConnected by viewModel.isConnected.collectAsState()
+    var showDialog by remember { mutableStateOf(false) }
 
     val weatherResult=viewModel.weather.observeAsState()
     val KeyboardControl = LocalSoftwareKeyboardController.current
 
+    LaunchedEffect(isConnected) {
+        showDialog = !isConnected
+    }
 
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = { Text("No Internet") },
+            text = { Text("You're offline. Check your internet connection.") },
+            confirmButton = {
+                TextButton(onClick = {}) {
+                    Text("OK")
+                }
+            }
+        )
+    }
 
     Column(
         modifier = Modifier
